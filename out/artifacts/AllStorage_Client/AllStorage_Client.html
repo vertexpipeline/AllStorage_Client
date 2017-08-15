@@ -1,0 +1,43 @@
+<html><head>
+  <SCRIPT src="http://java.com/js/dtjava.js"></SCRIPT>
+<script>
+    function launchApplication(jnlpfile) {
+        dtjava.launch(            {
+                url : 'AllStorage_Client.jnlp'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+        return false;
+    }
+</script>
+
+<script>
+    function javafxEmbedAllStorage_Client_id() {
+        dtjava.embed(
+            {
+                id : 'AllStorage_Client_id',
+                url : 'AllStorage_Client.jnlp',
+                placeholder : 'javafx-app-placeholder',
+                width : '600',
+                height : '400'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+    }
+    <!-- Embed FX application into web page once page is loaded -->
+    dtjava.addOnloadCallback(javafxEmbedAllStorage_Client_id);
+</script>
+
+</head><body>
+<h2>Test page for <b>AllStorage_Client</b></h2>
+  <b>Webstart:</b> <a href='AllStorage_Client.jnlp' onclick="return launchApplication('AllStorage_Client.jnlp');">click to launch this app as webstart</a><br><hr><br>
+
+  <!-- Applet will be inserted here -->
+  <div id='javafx-app-placeholder'></div>
+</body></html>

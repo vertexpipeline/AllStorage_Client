@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="AllStorage_Client.jnlp">
+  <information>
+    <title>AllStorage_Client</title>
+    <vendor>Unknown</vendor>
+    <description>AllStorage_Client</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="AllStorage_Client.jar" size="9551" download="eager" />
+    <jar href="annotations-13.0.jar" size="17536" download="eager" />
+    <jar href="javax.json-1.0.4.jar" size="85147" download="eager" />
+    <jar href="kotlin-reflect-1.1.3-2.jar" size="2411988" download="eager" />
+    <jar href="kotlin-stdlib-1.1.3-2.jar" size="877314" download="eager" />
+    <jar href="kotlin-stdlib-jre7-1.1.3-2.jar" size="2839" download="eager" />
+    <jar href="kotlin-stdlib-jre8-1.1.3-2.jar" size="11500" download="eager" />
+    <jar href="tornadofx-1.7.9.jar" size="2227825" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="600" height="400" main-class="com.vertexpipeline.allstorage.client.kotlin.app.MyApp"  name="AllStorage_Client" />
+  <update check="background"/>
+</jnlp>
