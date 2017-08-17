@@ -1,45 +1,50 @@
 package com.vertexpipeline.allstorage.client.kotlin.view
 
-import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItem
-import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItemType
 import com.vertexpipeline.allstorage.client.kotlin.controller.AppController
 import com.vertexpipeline.allstorage.client.kotlin.controller.StorageExplorerController
+import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItem
+import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItemType
+import com.vertexpipeline.allstorage.client.kotlin.stylesheet.StorageExplorerStylesheet
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.layout.Border
 import tornadofx.*
 import javafx.collections.FXCollections
+import javafx.scene.control.TableRow
+import javafx.scene.input.TransferMode
+import javafx.scene.paint.Color
 import java.util.Comparator
 
 class StorageExplorerView : View() {
     val controller: StorageExplorerController by inject()
-    val appController : AppController by inject()
-    val searchField = textfield { // TODO search field
+    val appController: AppController by inject()
+
+    val searchField = textfield {
+        // TODO search field
         disableProperty().bindBidirectional(appController.isControlDisabledProperty)
         anchorpaneConstraints {
             leftAnchor = 0.0
             topAnchor = 4.0
             bottomAnchor = 4.0
         }
-        style{
+        style {
             opacity = 0.3
         }
         setOnMouseEntered {
-            style{
+            style {
                 opacity = 1.0
             }
         }
-
         setOnMouseExited {
             style {
-                if(text == "" && !isFocused)
+                if (text == "" && !isFocused)
                     opacity = 0.3
             }
         }
         focusedProperty().addListener { observable, oldValue, newValue ->
-            if(!newValue)
-                style{
-                    if(text == "" && !isFocused)
+            if (!newValue)
+                style {
+                    if (text == "" && !isFocused)
                         opacity = 0.3
                 }
         }
@@ -53,8 +58,8 @@ class StorageExplorerView : View() {
             bottomAnchor = 0.0
         }
         top {
-            anchorpane{
-                menubar {
+            anchorpane {
+                toolbar {
                     disableProperty().bindBidirectional(appController.isControlDisabledProperty)
                     anchorpaneConstraints {
                         leftAnchor = 0.0
@@ -62,24 +67,32 @@ class StorageExplorerView : View() {
                         bottomAnchor = 0.0
                         rightAnchor = 0.0
                     }
-                    menu {
+                    button {
+                        addClass(StorageExplorerStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/back.png"))
+                        setOnAction {
+                            controller.moveBack()
+                        }
+                        disableProperty().bindBidirectional(controller.cannotMoveBackProperty)
                     }
-                    menu {
+                    button {
+                        addClass(StorageExplorerStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/refresh.png"))
                     }
-                    menu {
+                    button {
+                        addClass(StorageExplorerStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/recycling.png"))
                     }
-                    menu {
-                        graphic = imageview(Image("MenuIcons/fast-forward.png")){
+                    button {
+                        addClass(StorageExplorerStylesheet.menuButton)
+                        graphic = imageview(Image("MenuIcons/fast-forward.png")) {
                             rotate = 90.0
                         }
                     }
                 }
-                anchorpane{
-                    prefWidth = 200.0
-                    minWidth = 200.0
+                anchorpane {
+                    prefWidth = 160.0
+                    minWidth = 160.0
                     anchorpaneConstraints {
                         rightAnchor = 0.0
                         topAnchor = 0.0
@@ -90,22 +103,44 @@ class StorageExplorerView : View() {
             }
         }
         center {
-            tableview<ExplorerItem>(controller.files.observable()) {
+            tableview<ExplorerItem>() {
+                itemsProperty().bindBidirectional(controller.explorerItems)
                 disableProperty().bindBidirectional(appController.isControlDisabledProperty)
                 fixedCellSize = 36.0
-                column(messages["icon"], ExplorerItem::icon).cellFormat {
+                setRowFactory {
+                    val row = TableRow<ExplorerItem>()
+                    row.onDoubleClick {
+                        val item = this@tableview.selectedItem
+                        if(item != null){
+                            if(item.type == ExplorerItemType.Directory){
+                                controller.openDir(item.name)
+                            }
+                        }
+                    }
+                    row
+                }
+                column("", ExplorerItem::iconProperty).cellFormat {
+                    this.tableColumn.prefWidth = 40.0
                     graphic = imageview(it)
                 }
                 column(messages["name"], ExplorerItem::nameProperty).cellFormat {
-                    prefWidth = 120.0
+                    this.tableColumn.prefWidth = 160.0
                     text = it
                     style {
                         fontSize = 14.px
                         alignment = Pos.CENTER
                     }
                 }
-                column(messages["modified_date"], ExplorerItem::modDateProperty).cellFormat { it ->
-                    if (this.rowItem.itemType != ExplorerItemType.Directory) {
+                column(messages["extension"], ExplorerItem::extensionProperty).cellFormat {
+                    text = if (it != "<storage>") it else messages["folder"]
+                    style {
+                        fontSize = 14.px
+                        alignment = Pos.CENTER
+                    }
+                }
+                column(messages["modified_date"], ExplorerItem::lastModifiedProperty).cellFormat { it ->
+                    this.tableColumn.prefWidth = 160.0
+                    if (this.rowItem.extension != "<folder>") {
                         text = it.toString()
                         style {
                             fontSize = 14.px
@@ -116,11 +151,11 @@ class StorageExplorerView : View() {
                     }
                 }
                 column(messages["size"], ExplorerItem::sizeProperty).cellFormat {
-                    if (this.rowItem.itemType != ExplorerItemType.Directory) {
+                    if (this.rowItem.extension != "<folder>") {
                         val s = it.toDouble()
-                        text = if(s<1024){
+                        text = if (s < 1024) {
                             "${s.toInt()} ${messages["bytes"]}"
-                        } else if(s<1048576) {
+                        } else if (s < 1048576) {
                             "${(s / 1024).toInt()} ${messages["kilob"]}"
                         } else {
                             "${(s / 1048576).toInt()} ${messages["mbytes"]}"
@@ -137,12 +172,13 @@ class StorageExplorerView : View() {
                 setSortPolicy {
                     val comp = Comparator { o1: ExplorerItem, o2: ExplorerItem ->
                         val str = searchField.text
-                        fun makeScore(name:String, req:String):Int{ // TODO make searching
-                              return 0
+                        fun makeScore(name: String, req: String): Int { // TODO make searching
+                            return 0
                         }
-                        val s1 = makeScore(o1.name, str) + if(o1.type == ExplorerItemType.Directory) 1 else 0
-                        val s2 = makeScore(o2.name, str)+ if(o2.type == ExplorerItemType.Directory) 1 else 0
-                        if(s1 < s2)
+
+                        val s1 = makeScore(o1.name, str) + if (o1.extension == "<folder>") 1 else 0
+                        val s2 = makeScore(o2.name, str) + if (o2.extension == "<folder>") 1 else 0
+                        if (s1 < s2)
                             1
                         else if (s1 == s2)
                             0
@@ -152,10 +188,32 @@ class StorageExplorerView : View() {
                     FXCollections.sort(items.observable(), comp)
                     true
                 }
+                contextmenu {
+                    menu("Create folder"){
+                        setOnAction {
+                            controller.createFolder()
+                            this@contextmenu.hide()
+                        }
+                    }
+                }
+                setOnDragOver {
+                    if(it.dragboard.hasFiles()){
+                        it.acceptTransferModes(TransferMode.LINK)
+                    }
+                }
+                setOnDragDropped {
+                    with(it.dragboard) {
+                        if (hasFiles()) {
+                            files.forEach{
+                                controller.addFile(it)
+                            }
+                        }
+                    }
+                }
             }
         }
         bottom {
-            textfield{
+            textfield {
                 disableProperty().bindBidirectional(appController.isControlDisabledProperty)
                 border = Border.EMPTY
                 isEditable = false

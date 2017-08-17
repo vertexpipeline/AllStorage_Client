@@ -5,11 +5,13 @@ import tornadofx.*
 import java.util.*
 
 class AppView : View("All Storage") {
+    val rest:Rest by inject()
     val fileExplorer: StorageExplorerView by inject()
     val storagesManager: PackagesExplorerView by inject()
 
     init {
         FX.messages = ResourceBundle.getBundle("Messages")
+        reloadStylesheetsOnFocus()
     }
 
     override fun onDock() {
@@ -34,7 +36,6 @@ class AppView : View("All Storage") {
                         find(StoragesManagerView::class).openModal()
                     }
                 }
-
             }
             menu(messages["settings"]) {
                 graphic = imageview(Image("MenuIcons/settings-gears.png"))
