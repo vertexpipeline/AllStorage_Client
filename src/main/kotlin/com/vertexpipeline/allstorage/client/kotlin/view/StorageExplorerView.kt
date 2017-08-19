@@ -4,7 +4,7 @@ import com.vertexpipeline.allstorage.client.kotlin.controller.AppController
 import com.vertexpipeline.allstorage.client.kotlin.controller.StorageExplorerController
 import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItem
 import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItemType
-import com.vertexpipeline.allstorage.client.kotlin.stylesheet.StorageExplorerStylesheet
+import com.vertexpipeline.allstorage.client.kotlin.stylesheet.AppStylesheet
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.layout.Border
@@ -12,7 +12,6 @@ import tornadofx.*
 import javafx.collections.FXCollections
 import javafx.scene.control.TableRow
 import javafx.scene.input.TransferMode
-import javafx.scene.paint.Color
 import java.util.Comparator
 
 class StorageExplorerView : View() {
@@ -68,7 +67,7 @@ class StorageExplorerView : View() {
                         rightAnchor = 0.0
                     }
                     button {
-                        addClass(StorageExplorerStylesheet.menuButton)
+                        addClass(AppStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/back.png"))
                         setOnAction {
                             controller.moveBack()
@@ -76,15 +75,15 @@ class StorageExplorerView : View() {
                         disableProperty().bindBidirectional(controller.cannotMoveBackProperty)
                     }
                     button {
-                        addClass(StorageExplorerStylesheet.menuButton)
+                        addClass(AppStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/refresh.png"))
                     }
                     button {
-                        addClass(StorageExplorerStylesheet.menuButton)
+                        addClass(AppStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/recycling.png"))
                     }
                     button {
-                        addClass(StorageExplorerStylesheet.menuButton)
+                        addClass(AppStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/fast-forward.png")) {
                             rotate = 90.0
                         }

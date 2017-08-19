@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="AllStorage" />
         <module name="AllStorage_Client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="AllStorage" target="1.5" />
       <module name="AllStorage_Client" target="1.5" />
     </bytecodeTargetLevel>
   </component>

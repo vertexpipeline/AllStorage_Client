@@ -11,7 +11,6 @@ class AppView : View("All Storage") {
 
     init {
         FX.messages = ResourceBundle.getBundle("Messages")
-        reloadStylesheetsOnFocus()
     }
 
     override fun onDock() {
