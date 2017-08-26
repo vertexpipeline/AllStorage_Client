@@ -1,11 +1,12 @@
-package com.vertexpipeline.allstorage.client.kotlin.controller
+package com.vertexpipeline.allstorage.client.kotlin.Frames.App
 
-import com.vertexpipeline.allstorage.client.kotlin.model.NodeInfo
+import com.vertexpipeline.allstorage.client.kotlin.Frames.StorageExplorer.StorageExplorerController
+import com.vertexpipeline.allstorage.client.kotlin.Models.NodeInfo
 import javafx.beans.property.SimpleBooleanProperty
 import tornadofx.*
 
 class AppController : Controller(){
-    val explorerController:StorageExplorerController by inject()
+    val explorerController: StorageExplorerController by inject()
 
     val isControlDisabledProperty = SimpleBooleanProperty(true)
     var isMenuDisabled by isControlDisabledProperty

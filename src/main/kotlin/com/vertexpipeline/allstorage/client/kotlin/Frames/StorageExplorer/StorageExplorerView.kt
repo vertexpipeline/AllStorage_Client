@@ -1,16 +1,16 @@
-package com.vertexpipeline.allstorage.client.kotlin.view
+package com.vertexpipeline.allstorage.client.kotlin.Frames.StorageExplorer
 
-import com.vertexpipeline.allstorage.client.kotlin.controller.AppController
-import com.vertexpipeline.allstorage.client.kotlin.controller.StorageExplorerController
-import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItem
-import com.vertexpipeline.allstorage.client.kotlin.model.ExplorerItemType
-import com.vertexpipeline.allstorage.client.kotlin.stylesheet.AppStylesheet
+import com.vertexpipeline.allstorage.client.kotlin.Frames.App.AppController
+import com.vertexpipeline.allstorage.client.kotlin.Models.ExplorerItem
+import com.vertexpipeline.allstorage.client.kotlin.Models.ExplorerItemType
+import com.vertexpipeline.allstorage.client.kotlin.Stylesheets.GlobalStylesheet
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.layout.Border
 import tornadofx.*
 import javafx.collections.FXCollections
 import javafx.scene.control.TableRow
+import javafx.scene.input.KeyCode
 import javafx.scene.input.TransferMode
 import java.util.Comparator
 
@@ -67,7 +67,7 @@ class StorageExplorerView : View() {
                         rightAnchor = 0.0
                     }
                     button {
-                        addClass(AppStylesheet.menuButton)
+                        addClass(GlobalStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/back.png"))
                         setOnAction {
                             controller.moveBack()
@@ -75,15 +75,15 @@ class StorageExplorerView : View() {
                         disableProperty().bindBidirectional(controller.cannotMoveBackProperty)
                     }
                     button {
-                        addClass(AppStylesheet.menuButton)
+                        addClass(GlobalStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/refresh.png"))
                     }
                     button {
-                        addClass(AppStylesheet.menuButton)
+                        addClass(GlobalStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/recycling.png"))
                     }
                     button {
-                        addClass(AppStylesheet.menuButton)
+                        addClass(GlobalStylesheet.menuButton)
                         graphic = imageview(Image("MenuIcons/fast-forward.png")) {
                             rotate = 90.0
                         }
@@ -203,9 +203,7 @@ class StorageExplorerView : View() {
                 setOnDragDropped {
                     with(it.dragboard) {
                         if (hasFiles()) {
-                            files.forEach{
-                                controller.addFile(it)
-                            }
+                           controller.AddPackage(files.toTypedArray())
                         }
                     }
                 }
@@ -215,9 +213,14 @@ class StorageExplorerView : View() {
             textfield {
                 disableProperty().bindBidirectional(appController.isControlDisabledProperty)
                 border = Border.EMPTY
-                isEditable = false
+                isEditable = true
                 isFocusTraversable = false
                 textProperty().bindBidirectional(controller.pathProperty)
+                setOnKeyPressed {
+                    if(it.code == KeyCode.ENTER){
+                        controller.scanDir()
+                    }
+                }
             }
         }
     }

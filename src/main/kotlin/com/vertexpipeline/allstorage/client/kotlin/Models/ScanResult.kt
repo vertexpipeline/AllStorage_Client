@@ -1,33 +1,25 @@
-package com.vertexpipeline.allstorage.client.kotlin.model
+package com.vertexpipeline.allstorage.client.kotlin.Models
 
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
+import javax.json.JsonObject
 import tornadofx.getValue
 import tornadofx.setValue
-import javax.json.JsonObject
 
-class FolderInfo : JsonModel {
-    val foldersProperty = SimpleListProperty<FolderInfo>()
+class ScanResult : JsonModel {
+    val foldersProperty = SimpleListProperty<FolderInfo>(listOf<FolderInfo>().observable())
     var folders by foldersProperty
 
-    val filesProperty = SimpleListProperty<FileInfo>()
+    val filesProperty = SimpleListProperty<FileInfo>(listOf<FileInfo>().observable())
     var files by filesProperty
 
     val pathProperty = SimpleStringProperty("")
     var path by pathProperty
 
-    val nameProperty = SimpleStringProperty("")
-    var name by nameProperty
-
-    val fullNameProperty = SimpleStringProperty("")
-    var fullName by fullNameProperty
-
     override fun toJSON(json: JsonBuilder) {
         with(json) {
-            add("name", name)
             add("path", path)
-
             try {
                 add("files", files.asIterable().toJSON())
             } catch (ex: Exception) {
@@ -43,11 +35,15 @@ class FolderInfo : JsonModel {
 
     override fun updateModel(json: JsonObject) {
         with(json) {
-            name = string("name")
+            try {
+                files = getJsonArray("files").toModel<FileInfo>()
+            } catch (ex: Exception) {
+            }
+            try {
+                folders = getJsonArray("folders").toModel<FolderInfo>()
+            } catch (ex: Exception) {
+            }
             path = string("path")
-            fullName = path + "/" + name
-            files = getJsonArray("files").toModel<FileInfo>()
-            folders = getJsonArray("folders").toModel<FolderInfo>()
         }
     }
 }
