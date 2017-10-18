@@ -130,13 +130,13 @@ class StorageExplorerView : View() {
                         alignment = Pos.CENTER
                     }
                 }
-                column(messages["extension"], ExplorerItem::extensionProperty).cellFormat {
+                /*column(messages["extension"], ExplorerItem::extensionProperty).cellFormat {
                     text = if (it != "<storage>") it else messages["folder"]
                     style {
                         fontSize = 14.px
                         alignment = Pos.CENTER
                     }
-                }
+                }*/
                 column(messages["modified_date"], ExplorerItem::lastModifiedProperty).cellFormat { it ->
                     this.tableColumn.prefWidth = 160.0
                     if (this.rowItem.extension != "<folder>") {

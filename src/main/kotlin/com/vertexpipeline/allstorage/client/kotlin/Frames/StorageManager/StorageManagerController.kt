@@ -2,6 +2,7 @@ package com.vertexpipeline.allstorage.client.kotlin.Frames.StorageManager
 
 import com.vertexpipeline.allstorage.client.kotlin.Frames.App.AppController
 import com.vertexpipeline.allstorage.client.kotlin.Models.NodeInfo
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleListProperty
 import tornadofx.*
@@ -26,6 +27,10 @@ class StorageManagerController : Controller() {
 
     val scanProgressProperty = SimpleDoubleProperty(0.0)
     var scanProgress by scanProgressProperty
+
+    val isConnectedProperty = SimpleBooleanProperty()
+    var isConnected by isConnectedProperty
+
 
     var scanSize = 0.0
     var scanStep = 0.0

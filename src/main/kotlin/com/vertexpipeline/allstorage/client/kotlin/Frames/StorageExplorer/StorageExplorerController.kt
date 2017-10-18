@@ -11,6 +11,9 @@ import java.lang.Package
 import java.net.URLEncoder
 import java.util.*
 import kotlin.collections.ArrayList
+import java.security.MessageDigest
+
+
 
 class StorageExplorerController : Controller() {
     val rest = Rest()
@@ -26,6 +29,25 @@ class StorageExplorerController : Controller() {
     var cannotMoveBack by cannotMoveBackProperty
 
     val movingHistory: Stack<String> = Stack()
+
+    fun sha256(base: String): String {
+        try {
+            val digest = MessageDigest.getInstance("SHA-256")
+            val hash = digest.digest(base.toByteArray(charset("UTF-8")))
+            val hexString = StringBuffer()
+
+            for (i in hash.indices) {
+                val hex = Integer.toHexString(0xff and hash[i])
+                if (hex.length == 1) hexString.append('0')
+                hexString.append(hex)
+            }
+
+            return hexString.toString()
+        } catch (ex: Exception) {
+            throw RuntimeException(ex)
+        }
+
+    }
 
     fun encode(str: String?): String {
         return URLEncoder.encode(str ?: "", "UTF-8")
@@ -43,8 +65,11 @@ class StorageExplorerController : Controller() {
         fun getFileInfo(file:File):FileInfo{
             val fileInfo = FileInfo()
             fileInfo.name = file.name
+            fileInfo.fileID = file.fi
             fileInfo.extension = file.extension
             fileInfo.size = file.length()
+            fileInfo.fileLocal = file
+            appController.uploadQueue.add(fileInfo)
             return fileInfo
         }
 
@@ -80,8 +105,11 @@ class StorageExplorerController : Controller() {
             print(res.state)
         }
         catch (ex:Exception) {
-            print(ex)
+            print(ex.message + "add package")
+            appController.operationFault()
         }
+        appController.uploadFiles()
+        scanDir()
     }
 
     fun addFile(file: File): Boolean {
@@ -100,21 +128,26 @@ class StorageExplorerController : Controller() {
     }
 
     fun scanDir(): Boolean {
-        rest.baseURI = "http://"+appController.connectedNode?.address
-        items.clear()
-        val response = rest.get("/api/scan?accessKey=${encode(appController.connectedNode?.accessKey)}" +
-                "&path=${encode(path)}").one().toModel<OperationResult>()
-        if (response.state == "success") {
-            val res = response.result.toModel<ScanResult>()
-            res.folders.forEach {
-                items.add(ExplorerItem(ExplorerItemType.Directory, it))
+        try {
+            rest.baseURI = "http://" + appController.connectedNode?.address
+            items.clear()
+            val response = rest.get("/api/scan?accessKey=${encode(appController.connectedNode?.accessKey)}" +
+                    "&path=${encode(path)}").one().toModel<OperationResult>()
+            if (response.state == "success") {
+                val res = response.result.toModel<ScanResult>()
+                res.folders.forEach {
+                    items.add(ExplorerItem(ExplorerItemType.Directory, it))
+                }
+                res.files.forEach {
+                    items.add(ExplorerItem(ExplorerItemType.File, it))
+                }
+                return true
             }
-            res.files.forEach {
-                items.add(ExplorerItem(ExplorerItemType.File, it))
-            }
-            return true
+            return false
+        }catch (ex:Exception){
+            appController.operationFault()
+            return false
         }
-        return false
     }
 
     fun openDir(folder: String): Boolean {
